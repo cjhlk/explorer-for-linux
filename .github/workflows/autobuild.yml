@@ -17,8 +17,8 @@ jobs:
       - name: Setup Node.js (v20)
         uses: actions/setup-node@v4
         with:
-          node-version: 20          # 改用 20，避免 Node 18 相关弃用警告
-          cache: 'npm'
+          node-version: 20
+          # cache: 'npm'   # 移除缓存，因为没有锁文件
 
       - name: Cache Electron Builder
         uses: actions/cache@v3
@@ -29,7 +29,6 @@ jobs:
             ${{ runner.os }}-electron-builder-
 
       - name: Install dependencies
-        # 使用 npm install（不要求锁文件），若将来有 lock 文件也可自动使用
         run: npm install
 
       - name: Build and package (Windows)
