@@ -32,20 +32,13 @@ jobs:
         run: npm install --legacy-peer-deps
 
       - name: Build and package (Windows)
-        run: npm run build
+        run: npm run build -- --publish never   # 强制禁止 electron-builder 发布
         env:
-          ELECTRON_BUILDER_PUBLISH: never   # 关键：禁止 electron-builder 自动发布
+          CSC_IDENTITY_AUTO_DISCOVERY: false   # 跳过签名，避免下载 winCodeSign 超时
 
-      - name: Upload to Release (autobuild)
-        uses: softprops/action-gh-release@v2
+      - name: Upload artifacts for download
+        uses: actions/upload-artifact@v4
         with:
-          tag_name: autobuild
-          name: "Autobuild (Latest)"
-          prerelease: true
-          files: |
-            release/**/*.exe
-            release/**/*.blockmap
-            release/**/*.nupkg
-            release/**/*.msi
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          name: Windows-Build
+          path: release/**/*
+          if-no-files-found: error
