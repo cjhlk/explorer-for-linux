@@ -18,7 +18,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          # 移除 cache: 'npm' 以避免缺少锁文件的报错
+          # cache: 'npm'  # 若无 lock 文件则移除
 
       - name: Cache Electron Builder
         uses: actions/cache@v3
@@ -29,10 +29,12 @@ jobs:
             ${{ runner.os }}-electron-builder-
 
       - name: Install dependencies
-        run: npm install --legacy-peer-deps  
+        run: npm install --legacy-peer-deps
 
       - name: Build and package (Windows)
         run: npm run build
+        env:
+          ELECTRON_BUILDER_PUBLISH: never   # 关键：禁止 electron-builder 自动发布
 
       - name: Upload to Release (autobuild)
         uses: softprops/action-gh-release@v2
@@ -41,8 +43,9 @@ jobs:
           name: "Autobuild (Latest)"
           prerelease: true
           files: |
-            dist/**/*.exe
-            dist/**/*.nupkg
-            dist/**/*.msi
+            release/**/*.exe
+            release/**/*.blockmap
+            release/**/*.nupkg
+            release/**/*.msi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
